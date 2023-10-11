@@ -18,8 +18,15 @@ docker compose up -d nginx > /dev/null 2>&1
 echo "Successfully started nginx"
 
 echo "Staring certbot..."
-docker compose run certbot certonly --webroot -d ${domain} -w /var/www/certbot --agree-tos --no-eff-email
-echo "Successfully generated certificate"
+docker compose run certbot certonly --webroot -d ${domain} -w /var/www/certbot
+
+if [ $? -ne 0 ]; then
+    echo "Failed to generate certificate."
+    docker compose down > /dev/null 2>&1    
+    exit 1
+fi
+
+echo "Successfully generated certificate!"
 
 docker compose down nginx > /dev/null 2>&1
 
@@ -56,6 +63,6 @@ server {
 }
 EOL
 
-echo "Successfully generated nginx.conf"
-echo "Run docker compose to start nginx and certbot to renew certificates"
+echo "Successfully generated nginx.conf!"
+echo "Run docker compose to start nginx and certbot to renew certificates."
 echo "$ docker compose up -d"
