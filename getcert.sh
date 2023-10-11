@@ -12,10 +12,12 @@ server {
 }
 EOL
 
-docker compose down
+docker compose down > /dev/null 2>&1
 echo "Starting nginx..."
-docker compose up -d nginx
+docker compose up -d nginx > /dev/null 2>&1
 echo "Successfully started nginx"
 
 echo "Staring certbot..."
-docker compose run certbot certonly --webroot -d ${domain} --register-unsafely-without-email
+docker compose run certbot certonly --webroot -d ${domain} -w /var/www/certbot --agree-tos --no-eff-email
+
+docker compose down nginx > /dev/null 2>&1
